@@ -166,7 +166,7 @@ export function createProgram(): Command {
         .default("copilot")
     )
     .option("--hub-url <url>", "Hub URL", "http://localhost:7337")
-    .option("--timeout <ms>", "Request timeout in milliseconds (default: 600000)", "600000")
+    .option("--timeout <ms>", "Request timeout in milliseconds (default: 60000)", "60000")
     .addOption(
       new Option("--log-level <level>", "Log level").choices([...LOG_LEVELS]).default("info")
     )

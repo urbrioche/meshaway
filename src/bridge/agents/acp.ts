@@ -32,7 +32,7 @@ export class BridgeAcpAgent extends BridgeAgent {
     super(cmd, args);
     this.onNotification = options.onNotification;
     this.onRequest = options.onRequest;
-    this.timeoutMs = options.timeoutMs ?? (Number(process.env.MESHAWAY_TIMEOUT_MS) || 600000);
+    this.timeoutMs = options.timeoutMs ?? 60000;
 
     if (options.testStreams) {
       this.proc = {
