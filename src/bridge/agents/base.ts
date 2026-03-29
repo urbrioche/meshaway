@@ -12,7 +12,7 @@ export abstract class BridgeAgent {
   }
 
   /** Send a JSON-RPC request to the agent and return the result. */
-  abstract request(method: string, params: unknown, timeoutMs?: number): Promise<unknown>;
+  abstract request(method: string, params: unknown): Promise<unknown>;
 
   /** Close the agent process and release resources. */
   abstract close(): void;

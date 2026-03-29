@@ -36,6 +36,8 @@ export interface BridgeEngineOptions {
   agent: string;
   agentArgs?: string[];
   adapter: BridgeAdapterKind;
+  /** Request timeout in milliseconds for the ACP agent. */
+  timeoutMs?: number;
   hubUrl?: string;
   runnerSessionId?: string;
   sessionStore?: SessionStore;
@@ -74,6 +76,7 @@ export class BridgeEngine {
     this.agent = opts.testAgent ?? new BridgeAcpAgent(opts.agent!, opts.agentArgs ?? [], {
       onNotification: (method, params) => this.handleAgentNotification(method, params),
       onRequest: (method, id, params) => this.handleAgentRequest(method, id, params),
+      timeoutMs: opts.timeoutMs,
     });
     this.adapter = opts.testAdapter ?? createBridgeAdapter(opts.adapter, this.getAdapterContext());
   }

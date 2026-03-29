@@ -10,6 +10,8 @@ export interface BridgeAcpAgentOptions {
   onNotification?: (method: string, params: unknown) => void;
   /** Called when the agent sends a JSON-RPC request (e.g. session/request_permission). Handler returns result to send back. */
   onRequest?: (method: string, id: JsonRpcId, params: unknown) => Promise<unknown>;
+  /** Request timeout in milliseconds. Defaults to env MESHAWAY_TIMEOUT_MS or 600000 (10 min). */
+  timeoutMs?: number;
   /** For testing: use these streams instead of spawning a process. */
   testStreams?: { stdin: NodeJS.WritableStream; stdout: NodeJS.ReadableStream };
 }
@@ -24,11 +26,13 @@ export class BridgeAcpAgent extends BridgeAgent {
   >();
   private readonly onNotification?: (method: string, params: unknown) => void;
   private readonly onRequest?: (method: string, id: JsonRpcId, params: unknown) => Promise<unknown>;
+  private readonly timeoutMs: number;
 
   constructor(cmd: string, args: string[] = [], options: BridgeAcpAgentOptions = {}) {
     super(cmd, args);
     this.onNotification = options.onNotification;
     this.onRequest = options.onRequest;
+    this.timeoutMs = options.timeoutMs ?? (Number(process.env.MESHAWAY_TIMEOUT_MS) || 600000);
 
     if (options.testStreams) {
       this.proc = {
@@ -117,7 +121,7 @@ export class BridgeAcpAgent extends BridgeAgent {
       });
   }
 
-  async request(method: string, params: unknown, timeoutMs = 60000): Promise<unknown> {
+  async request(method: string, params: unknown): Promise<unknown> {
     const id = this.nextId++;
     const payload = {
       jsonrpc: "2.0",
@@ -129,7 +133,7 @@ export class BridgeAcpAgent extends BridgeAgent {
       const timer = setTimeout(() => {
         this.pending.delete(id);
         reject(new Error(`ACP request timeout: ${method}`));
-      }, timeoutMs);
+      }, this.timeoutMs);
       this.pending.set(id, { resolve, reject, timer });
     });
     this.proc.stdin?.write(JSON.stringify(payload) + "\n");

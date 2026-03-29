@@ -26,6 +26,8 @@ function readContentLengthHeader(header: string): number | null {
 export interface StdioBridgeOptions {
   hubUrl?: string;
   runnerSessionId?: string;
+  /** Request timeout in milliseconds for the ACP agent. */
+  timeoutMs?: number;
 }
 
 export async function runStdioBridge(
@@ -52,6 +54,7 @@ export async function runStdioBridge(
     adapter,
     agent,
     agentArgs,
+    timeoutMs: options.timeoutMs,
     hubUrl: options.hubUrl,
     runnerSessionId: options.runnerSessionId,
     sendToClient: (payload) => writeResponse(payload),
